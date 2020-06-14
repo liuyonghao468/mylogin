@@ -1,11 +1,11 @@
 <template>
   <div class="login">
     <div class="input-wrap">
-        <input type="text" v-model="name"/>
+        <input type="text" v-model="username"/>
         <span v-if="error.name" class="err-msg">{{error.name}}</span>
     </div>
     <div class="input-wrap">
-        <input type="password" v-model="pwd"/>
+        <input type="password" v-model="passwd"/>
         <span v-if="error.pwd" class="err-msg">{{error.pwd}}</span>
     </div>
     <div class="input-wrap">
@@ -18,38 +18,66 @@
 export default {
   data () {
     return {
-      name: '',
-      pwd: 3,
+      info: null,
+      username: "",
+      passwd: "",
       error: {
-        name: '',
-        pwd: ''
+        name: "",
+        pwd: ""
       }
     }
   },
 
   methods: {
-    check (name, pwd) {
-      if (!name) {
-        this.error.name = '请输入姓名'
+    check (username, passwd) {
+      if (!username) {
+        this.error.name = '请输入用户名'
         return false
       }
-      if (!pwd) {
+      if (!passwd) {
         this.error.pwd = '请输入密码'
         return false
       }
       return true
     },
-    login () {
-      const {name, pwd, $router} = this
-      if (!this.check(name, pwd)) return
-      debugger
-      if (name === 'admin' && pwd === '123') {
-        debugger
-        console.log(name)
-        $router.push({ name: 'main' })
+    async login() {
+      const {username, passwd, $router} = this
+      if (!this.check(username, passwd)) return
+
+      const response = await this.$axios
+        .post('http://raindy.jios.org:3664/user/checkPassword', {
+          username: this.username,
+          passwd: this.passwd
+        }, {headers: {'Content-Type': 'application/json'}})
+        .then(response => (response))
+        .catch(function (error) { // 请求失败处理
+          console.log(error);
+        });
+      console.log(response.data)
+      if (response.data === true) {
+        alert('登陆成功！')
       } else {
         alert('用户名错误')
       }
+
+      // var formData = JSON.stringify(this.username,this.passwd);
+      // console.log(this.username)
+      // console.log(this.passwd)
+      // this.$http.post("http:/raindy.jios.org:3664/user/checkPassword",formData).then(function(data){
+      //   if(data.json().state=="true") {
+      //     console.log("success");
+      //   }
+      //     }).catch(function(){
+      //   console.log("服务器异常！");
+      // });
+
+      // if (name === 'admin' && pwd === '123') {
+      //   debugger
+      //   console.log(name)
+      //   $router.push({ name: 'main' })
+      // } else {
+      //   alert('用户名错误')
+      // }
     }
   }
 }

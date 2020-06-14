@@ -6,6 +6,10 @@ import VueRouter from 'vue-router'
 // 组件
 import Main from './components/Main.vue'
 import Login from './components/Login.vue'
+
+import axios from 'axios'
+Vue.prototype.$axios = axios;
+
 Vue.config.productionTip = false
 const routes = [
   { name: 'main', path: '/', component: Main },
